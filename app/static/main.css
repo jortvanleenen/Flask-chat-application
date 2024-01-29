@@ -1,0 +1,50 @@
+.input-group .form-floating input {
+    border-bottom-left-radius: 0;
+    border-top-left-radius: 0;
+}
+
+.input-group .form-floating textarea {
+    border-bottom-right-radius: 0;
+    border-top-right-radius: 0;
+}
+
+.primary-background {
+    background-color: #001158;
+    color: white
+}
+
+.primary-button {
+    background-color: #001158;
+    color: white;
+}
+
+.primary-button:hover {
+    background-color: #B27F2B;
+}
+
+.primary-checkbox:checked {
+    background-color: #001158;
+}
+
+.custom-border {
+    border: 1px solid #ced4da;
+    border-radius: .25rem;
+}
+
+.custom-list-item.active {
+    background-color: #001158;
+    border: 0;
+}
+
+#chatScreenContent {
+    height: 75vh;
+}
+
+.chat-message {
+    max-width: 80%;
+}
+
+.hidden-element {
+    display: none;
+    visibility: hidden !important;
+}

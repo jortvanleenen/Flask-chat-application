@@ -1,0 +1,135 @@
+{% extends "base.html" %}
+
+{% block nav_chat_screen_class %}active{% endblock nav_chat_screen_class %}
+{% block nav_chat_screen_aria %}page{% endblock nav_chat_screen_aria %}
+
+{% block content %}
+    <div class="container mt-3">
+        <div class="row">
+            <div class="col-4">
+                <div class="d-flex mb-1">
+                    <!-- Button trigger modal -->
+                    <button type="button" class="btn primary-button flex-grow-1" data-bs-toggle="modal"
+                            data-bs-target="#newChatModal">
+                        Start a new chat
+                    </button>
+                </div>
+
+                <!-- Modal -->
+                <div class="modal fade" id="newChatModal" tabindex="-1" aria-labelledby="newChatModalLabel"
+                     aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="newChatModalLabel">Currently active users</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                        aria-label="Close"></button>
+                            </div>
+                            {% if active_users %}
+                                <form action="" method="POST">
+                                {{ chat_form.hidden_tag() }}
+                            {% endif %}
+                            <div class="modal-body">
+                                {% if chat_form.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {% for error in chat_form.errors %}
+                                            <span class="ms-1">{{ error }}</span>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                                <span class="text-center">Select one or more users to start a chat:</span>
+                                {% if active_users %}
+                                    <div class="list-group">
+                                        {% for user in active_users %}
+                                            <div class="list-group-item d-flex">
+                                                {{ chat_form[user.username].label(class="flex-grow-1
+                                                form-check-label") }}
+                                                {{ chat_form[user.username](class="form-check-input
+                                                primary-checkbox") }}
+                                            </div>
+                                        {% endfor %}
+                                    </div>
+                                {% else %}
+                                    <div class="alert alert-info text-center mt-3">
+                                        There are no users currently active, please check back later or refresh the
+                                        page and try again.
+                                    </div>
+                                {% endif %}
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn" data-bs-dismiss="modal">Close</button>
+                                {% if active_users %}
+                                    <input id="open" type="submit" value="Open chat" class="btn primary-button"
+                                           data-bs-dismiss="modal" name="open"/>
+                                {% endif %}
+                            </div>
+                            {% if active_users %}
+                                </form>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                <!-- List of all chats for current_user -->
+                <div class="list-group list-group-test list-group-flush custom-border overflow-auto">
+                    {% for chat in chats %}
+                        <a href="javascript:void(0)" onclick="openChat('{{ chat.chat_id }}'); return false;"
+                           class="list-group-item list-group-item-action custom-list-item d-flex
+                           justify-content-between" data-bs-toggle="list">
+                            You{% for user in chat.users if
+                            user.username != current_user.username %}, {{ user.username }}
+                        {% endfor %}
+                            <i class="bi bi-chevron-right"></i>
+                        </a>
+                    {% endfor %}
+                </div>
+            </div>
+            <!-- A window showing all messages of the currently selected chat -->
+            <div id="chatScreen" class="col-8">
+                <!-- Chat -->
+                <div id="chatScreenContent" class="overflow-auto">
+                    <div id="messagesAlert" class="alert alert-info text-center">
+                        <p>Please select or start a chat to begin chatting.</p>
+                        <p class="small">Are you missing a recently created chat?
+                            Please refresh the page and check again.</p>
+                    </div>
+                    <div id="messageRight" class="justify-content-end mt-3 hidden-element">
+                        {% include '_message.html' %}
+                    </div>
+                    <div id="messageLeft" class="justify-content-start mt-3 hidden-element">
+                        {% include '_message.html' %}
+                    </div>
+                </div>
+                <!-- Send message -->
+                <form id="messageForm" class="hidden-element mt-3" action="" method="POST" class="mt-3"
+                      onsubmit="updateChat(); return false;">
+                    {{ message_form.chat_id(id="formChatId") }}
+                    {{ message_form.csrf_token(id="formCsrfToken") }}
+                    <!-- 'Content' input field -->
+                    <div class="mb-3">
+                        <div class="input-group">
+                            <div class="form-floating flex-grow-1">
+                                {% if message_form.content.errors %}
+                                    {{ message_form.content(class="form-control is-invalid", id="formContent",
+                         placeholder="message") }}
+                                {% else %}
+                                    {{ message_form.content(class="form-control", id="formContent",
+                         placeholder="message") }}
+                                {% endif %}
+                                {{ message_form.content.label(for="formContent", class="form-label") }}
+                            </div>
+                            {{ message_form.send(class="btn primary-button", id="formSend") }}
+                        </div>
+
+                        {% if message_form.content.errors %}
+                            <div class="invalid-feedback d-block">
+                                {% for error in message_form.content.errors %}
+                                    <span class="ms-1">{{ error }}</span>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock content %}
